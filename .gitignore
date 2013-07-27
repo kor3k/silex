@@ -1,0 +1,5 @@
+/vendor/
+/log/
+/cache/
+/nbproject/
+/composer.lock

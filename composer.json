@@ -1,0 +1,40 @@
+{
+    "name": "kor3k/silex",
+    "description": "silex bootstrap, includes orm provider",
+    "license": "MIT",    
+    "minimum-stability": "dev",
+    
+    "require": {
+        "php": ">=5.4.6",
+        "silex/silex": "~1.0",
+        "symfony/browser-kit": "~2.3",
+        "symfony/console": "~2.3",
+        "symfony/config": "~2.3",
+        "symfony/css-selector": "~2.3",
+        "symfony/dom-crawler": "~2.3",
+        "symfony/filesystem": "~2.3",
+        "symfony/finder": "~2.3",
+        "symfony/form": "~2.3",
+        "symfony/locale": "~2.3",
+        "symfony/process": "~2.3",
+        "symfony/security": "~2.3",
+        "symfony/serializer": "~2.3",
+        "symfony/translation": "~2.3",
+        "symfony/validator": "~2.3",
+        "symfony/monolog-bridge": "~2.3",
+        "symfony/twig-bridge": "~2.3",
+        "doctrine/dbal": ">=2.2.0,<2.4.0-dev",
+        "swiftmailer/swiftmailer": "5.*",
+        "dflydev/doctrine-orm-service-provider": "dev-master"
+    },
+            
+            
+    "autoload": {
+        "psr-0": { "Core\\": "src/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.9.x-dev"
+        }
+    }
+}
