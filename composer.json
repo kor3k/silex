@@ -2,7 +2,7 @@
     "name": "kor3k/silex",
     "description": "silex bootstrap, includes orm provider",
     "license": "MIT",    
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     
     "require": {
         "php": ">=5.4.6",
@@ -25,7 +25,7 @@
         "symfony/twig-bridge": "~2.3",
         "doctrine/dbal": ">=2.2.0,<2.4.0-dev",
         "swiftmailer/swiftmailer": "5.*",
-        "dflydev/doctrine-orm-service-provider": "dev-master as 1.0"
+        "dflydev/doctrine-orm-service-provider": "dev-master"
     },
             
             
