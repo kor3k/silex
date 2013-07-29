@@ -2,7 +2,7 @@
     "name": "kor3k/silex",
     "description": "silex bootstrap, includes orm provider",
     "license": "MIT",    
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     
     "require": {
         "php": ">=5.4.6",
@@ -34,7 +34,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.9.x-dev"
+            "dev-master": "0.9-dev"
         }
     }
 }
