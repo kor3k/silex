@@ -135,11 +135,20 @@ class Application extends SilexApplication
 	return $response;
     }
     
+    protected function initNativeSession()
+    {
+	$this->register(new Silex\Provider\SessionServiceProvider(), array(
+	   'session.storage.options'	    =>	array(	       
+		'cookie_lifetime'   => 3600 ,     
+	   ),	
+	));	        
+    }
+    
 /**
  * 
  * @param \Doctrine\DBAL\Connection $connection
  */    
-    protected function initSession( Connection $connection )
+    protected function initDbSession( Connection $connection )
     {
 	$this->register(new Silex\Provider\SessionServiceProvider(), array(
 	   'session.storage.options'	    =>	array(	       
