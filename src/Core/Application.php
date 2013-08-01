@@ -261,8 +261,16 @@ class Application extends SilexApplication
     }
     
     protected function initForm()
-    {
-	$this->register(new \Silex\Provider\FormServiceProvider());
+    {        
+        $this->register(new \Silex\Provider\FormServiceProvider());
+        
+        /* forms needs translator for error messages etc */
+        
+	if( !isset( $this['translator'] ) )
+        {
+            $this->register(new \Silex\Provider\TranslationServiceProvider(), array(
+            ));            
+        }        
     }
     
 /**
