@@ -25,7 +25,9 @@
         "symfony/twig-bridge": "~2.3",
         "doctrine/dbal": ">=2.2.0,<2.4.0-dev",
         "swiftmailer/swiftmailer": "5.*",
-        "dflydev/doctrine-orm-service-provider": "dev-master"
+
+        "dflydev/doctrine-orm-service-provider": "dev-master" ,
+        "symfony/yaml": "~2.3"
     },
             
             
