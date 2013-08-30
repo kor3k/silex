@@ -55,8 +55,8 @@ class Application extends SilexApplication
     public function redirect( $url , $status = 302 )
     {
         $response   =	parent::redirect( $url , $status );
-	$this->terminate( $this['request'] , $response );
-	return $response;
+        $this->terminate( $this['request'] , $response );
+        return $response;
     }    
     
 /**
@@ -65,12 +65,12 @@ class Application extends SilexApplication
  */    
     public function mail( \Swift_Message $message )
     {    	
-	if( $this['debug'] )
-	{
-	    $message->setTo( $this['mailer_user'] );	    
-	}	
-	
-	return $this->_mail( $message );
+        if( $this['debug'] )
+        {
+            $message->setTo( $this['mailer_user'] );
+        }
+
+        return $this->_mail( $message );
 	
 //	else
 //	{	    	    
@@ -91,12 +91,12 @@ class Application extends SilexApplication
  */    
     protected function logRequest( Request $request )
     {
-	$message    =	'request';
-	$context    =	(array)$request;
-	
-	$this->log( $message , $context );
-	
-	return $message;
+        $message    =	'request';
+        $context    =	(array)$request;
+
+        $this->log( $message , $context );
+
+        return $message;
     }
     
 /**
@@ -107,18 +107,18 @@ class Application extends SilexApplication
  */    
     protected function handleError( \Exception $e , $code )
     {
-	if( $e instanceof NotFoundHttpException )
-	{
-	    $response	=   $this->render( '404.html.twig' , [ 'error' => $e ] );
-	}
-	else
-	{
-	    $response	=   $this->render( 'error.html.twig' , [ 'error' => $e ] );
-	}
-	
-	$this->prepareResponse( $response );
-	
-	return $response;
+        if( $e instanceof NotFoundHttpException )
+        {
+            $response	=   $this->render( '404.html.twig' , [ 'error' => $e ] );
+        }
+        else
+        {
+            $response	=   $this->render( 'error.html.twig' , [ 'error' => $e ] );
+        }
+
+        $this->prepareResponse( $response );
+
+        return $response;
     }
     
 /**
@@ -128,21 +128,21 @@ class Application extends SilexApplication
  */    
     protected function prepareResponse( Response $response )
     {
-	$response->setTtl( $this['response_ttl'] );	    
-	$response->setProtocolVersion( '1.1' );
-	$response->headers->set( 'Content-Language' , $this['locale'] );	
-	$response->setCharset( $this['charset'] );
-	
-	return $response;
+        $response->setTtl( $this['response_ttl'] );
+        $response->setProtocolVersion( '1.1' );
+        $response->headers->set( 'Content-Language' , $this['locale'] );
+        $response->setCharset( $this['charset'] );
+
+        return $response;
     }
     
     protected function initNativeSession()
     {
-	$this->register(new Silex\Provider\SessionServiceProvider(), array(
-	   'session.storage.options'	    =>	array(	       
-		'cookie_lifetime'   => 3600 ,     
-	   ),	
-	));	        
+        $this->register(new Silex\Provider\SessionServiceProvider(), array(
+           'session.storage.options'	    =>	array(
+            'cookie_lifetime'   => 3600 ,
+           ),
+        ));
     }
     
 /**
@@ -151,26 +151,26 @@ class Application extends SilexApplication
  */    
     protected function initDbSession( Connection $connection )
     {
-	$this->register(new Silex\Provider\SessionServiceProvider(), array(
-	   'session.storage.options'	    =>	array(	       
-		'cookie_lifetime'   => 3600 ,     
-	   ),	
-	));		
-	
-	$this['session.storage.handler'] = $this->share(
-	function() use( $connection ) 
-	{
-	    return new PdoSessionHandler(
-		$connection->getWrappedConnection(),
-		[
-		    'db_table'      => 'session',
-		    'db_id_col'     => 'id_session',
-		    'db_data_col'   => 'value',
-		    'db_time_col'   => 'timestamp',
-		],
-		$this['session.storage.options']
-	    );
-	});	
+        $this->register(new Silex\Provider\SessionServiceProvider(), array(
+           'session.storage.options'	    =>	array(
+            'cookie_lifetime'   => 3600 ,
+           ),
+        ));
+
+        $this['session.storage.handler'] = $this->share(
+        function() use( $connection )
+        {
+            return new PdoSessionHandler(
+            $connection->getWrappedConnection(),
+            [
+                'db_table'      => 'session',
+                'db_id_col'     => 'id_session',
+                'db_data_col'   => 'value',
+                'db_time_col'   => 'timestamp',
+            ],
+            $this['session.storage.options']
+            );
+        });
     }
     
 /**
@@ -182,21 +182,21 @@ class Application extends SilexApplication
  */    
     protected function initDoctrine( $host , $dbname , $user , $password )
     {
-	$this->register(new \Silex\Provider\DoctrineServiceProvider(), array(
-	    'dbs.options' => array (
-		$dbname => array(
-		    'driver'    => 'pdo_mysql',
-		    'host'      =>  $host,
-		    'dbname'    =>  $dbname,
-		    'user'      =>  $user,
-		    'password'  =>  $password,
-		    'charset'   =>  'UTF8',
-		),
-	    ),
-	));	
+        $this->register(new \Silex\Provider\DoctrineServiceProvider(), array(
+            'dbs.options' => array (
+            $dbname => array(
+                'driver'    => 'pdo_mysql',
+                'host'      =>  $host,
+                'dbname'    =>  $dbname,
+                'user'      =>  $user,
+                'password'  =>  $password,
+                'charset'   =>  'UTF8',
+            ),
+            ),
+        ));
     }
     
-    protected function initDoctrineOrm()
+    protected function initDoctrineOrm( $connection )
     {
         $this->register(new DoctrineOrmServiceProvider, array(
             "orm.proxies_dir" => DIR ."/cache/proxies",
@@ -208,6 +208,7 @@ class Application extends SilexApplication
                         "path" => DIR."/src/Resources/config/doctrine",
                     ),
                 ),
+                "connection"    =>  $connection ,
             ),
         ));
     }
@@ -218,19 +219,19 @@ class Application extends SilexApplication
  */    
     protected function initHttpCache( $ttl = 3600 )
     {
-	$this->register(new \Silex\Provider\HttpCacheServiceProvider(), array(
-	   'http_cache.cache_dir'   =>	DIR.'/cache/',
-	   'http_cache.esi'	    =>	null,
-	   'http_cache.options'	    =>	array(	       
-		'debug'                  => false,
-		'default_ttl'            => (int)$ttl,
-		'private_headers'        => array('Authorization', 'Cookie'),
-		'allow_reload'           => true,
-		'allow_revalidate'       => true,
-		'stale_while_revalidate' => 2,
-		'stale_if_error'         => 60,	       
-	   ),	
-	));			
+        $this->register(new \Silex\Provider\HttpCacheServiceProvider(), array(
+           'http_cache.cache_dir'   =>	DIR.'/cache/',
+           'http_cache.esi'	    =>	null,
+           'http_cache.options'	    =>	array(
+            'debug'                  => false,
+            'default_ttl'            => (int)$ttl,
+            'private_headers'        => array('Authorization', 'Cookie'),
+            'allow_reload'           => true,
+            'allow_revalidate'       => true,
+            'stale_while_revalidate' => 2,
+            'stale_if_error'         => 60,
+           ),
+        ));
     }
     
 /**
@@ -241,24 +242,24 @@ class Application extends SilexApplication
  */    
     protected function initSwiftmailer( $user , $password , $sender = null )
     {			
-	$this->register(new \Silex\Provider\SwiftmailerServiceProvider(), array(
-            'swiftmailer.options'     =>        array(			
-                'transport'         =>  'gmail',
-                'host'              =>  'smtp.gmail.com',
-                'username'          =>  $user,
-                'password'          =>  $password ,
-                'sender_address'    =>  $sender ?: $user, 
-                'encryption'        =>  'tls' ,
-                'auth_mode'         =>  'login' ,
-                'port'              =>  587 ,
-                    )
-	));
+        $this->register(new \Silex\Provider\SwiftmailerServiceProvider(), array(
+                'swiftmailer.options'     =>        array(
+                    'transport'         =>  'gmail',
+                    'host'              =>  'smtp.gmail.com',
+                    'username'          =>  $user,
+                    'password'          =>  $password ,
+                    'sender_address'    =>  $sender ?: $user,
+                    'encryption'        =>  'tls' ,
+                    'auth_mode'         =>  'login' ,
+                    'port'              =>  587 ,
+                        )
+        ));
 	
     }
     
     protected function initUrlGenerator()
     {
-	$this->register(new \Silex\Provider\UrlGeneratorServiceProvider());
+	    $this->register(new \Silex\Provider\UrlGeneratorServiceProvider());
     }
     
     protected function initForm()
@@ -267,11 +268,11 @@ class Application extends SilexApplication
         
         /* forms needs translator for error messages etc */
         
-	if( !isset( $this['translator'] ) )
+        if( !isset( $this['translator'] ) )
         {
             $this->register(new \Silex\Provider\TranslationServiceProvider(), array(
-            ));            
-        }        
+            ));
+        }
     }
     
 /**
@@ -280,7 +281,7 @@ class Application extends SilexApplication
  */    
     protected function initSecurity( array $security = array() )
     {		
-	$this->register(new \Silex\Provider\SecurityServiceProvider(), $security );	
+	    $this->register(new \Silex\Provider\SecurityServiceProvider(), $security );
     }
     
 /**
@@ -290,78 +291,78 @@ class Application extends SilexApplication
  */
     protected function initBasicHttpSecurity( $pattern , array $users = array( 'admin' => [ 'ROLE_ADMIN' , 'vstup' ] ) )
     {		
-	$this['security.role_hierarchy'] = array(
-	    'ROLE_ADMIN' => [ 'ROLE_USER', 'ROLE_ALLOWED_TO_SWITCH' ],
-	);	 		
-	
-	$this['security.firewalls']   =	
-	[
-	    'admin' =>	
-	    [
-		'pattern'   =>  $pattern,
-		'http'	    =>  true ,		    
-		'stateless' =>  true ,
-		'users'	    =>	$users
-	    ]
-	];	
-	
-	$this->initSecurity();
-	
-	$this['security.encoder.digest'] = $this->share(
-	function( $app ) 
-	{
-	    return new PlaintextPasswordEncoder();
-	});	
+        $this['security.role_hierarchy'] = array(
+            'ROLE_ADMIN' => [ 'ROLE_USER', 'ROLE_ALLOWED_TO_SWITCH' ],
+        );
+
+        $this['security.firewalls']   =
+        [
+            'admin' =>
+            [
+            'pattern'   =>  $pattern,
+            'http'	    =>  true ,
+            'stateless' =>  true ,
+            'users'	    =>	$users
+            ]
+        ];
+
+        $this->initSecurity();
+
+        $this['security.encoder.digest'] = $this->share(
+        function( $app )
+        {
+            return new PlaintextPasswordEncoder();
+        });
     }
       
     protected function initTwig()
     {
-	$this->register(new \Silex\Provider\TwigServiceProvider(), array(
-	    'twig.path' => DIR.'/src/Resources/views',
-	));		
+        $this->register(new \Silex\Provider\TwigServiceProvider(), array(
+            'twig.path' => DIR.'/src/Resources/views',
+        ));
     }
     
     protected function initMonolog()
     {
-	$this->register(new \Silex\Provider\MonologServiceProvider(), array(
-	    'monolog.logfile'	=>  DIR.'/log/'. ( $this['debug'] ? 'dev' : 'prod' ) .'.log',
-	    'monolog.level'	=>  $this['debug'] ? Logger::DEBUG : Logger::INFO ,
-	    'monolog.name'	=>  'app' ,
-	));	
+        $this->register(new \Silex\Provider\MonologServiceProvider(), array(
+            'monolog.logfile'	=>  DIR.'/log/'. ( $this['debug'] ? 'dev' : 'prod' ) .'.log',
+            'monolog.level'	=>  $this['debug'] ? Logger::DEBUG : Logger::INFO ,
+            'monolog.name'	=>  'app' ,
+        ));
     }
     
     protected function initValidator()
     {
-	$this->register(new \Silex\Provider\ValidatorServiceProvider());
+	    $this->register(new \Silex\Provider\ValidatorServiceProvider());
     }
     
     protected function initTranslation( $locale , $localeFallback = null )
     {
-	$this->register(new \Silex\Provider\TranslationServiceProvider(), array(
-	    'locale'		=>  $locale ,
-	    'locale_fallback'	=>  $localeFallback ?: $locale ,
-	));	
-	
-	$this['translator.domains'] = array(
-	    'messages' => array(
-		'en' => array(
-		    'hello'     => 'Hello %name%',
-		    'goodbye'   => 'Goodbye %name%',
-		),
-		'de' => array(
-		    'hello'     => 'Hallo %name%',
-		    'goodbye'   => 'Tschüss %name%',
-		),
-		'fr' => array(
-		    'hello'     => 'Bonjour %name%',
-		    'goodbye'   => 'Au revoir %name%',
-		),
-	    ),
-	    'validators' => array(
-		'fr' => array(
-		    'This value should be a valid number.' => 'Cette valeur doit être un nombre.',
-		),
-	    ),
-	);	
+        $this->register(new \Silex\Provider\TranslationServiceProvider(), array(
+            'locale'		=>  $locale ,
+            'locale_fallback'	=>  $localeFallback ?: $locale ,
+        ));
+
+        $this['translator.domains'] = array(
+            'messages' => array(
+            'en' => array(
+                'hello'     => 'Hello %name%',
+                'goodbye'   => 'Goodbye %name%',
+            ),
+            'de' => array(
+                'hello'     => 'Hallo %name%',
+                'goodbye'   => 'Tschüss %name%',
+            ),
+            'fr' => array(
+                'hello'     => 'Bonjour %name%',
+                'goodbye'   => 'Au revoir %name%',
+            ),
+            ),
+            'validators' => array(
+            'fr' => array(
+                'This value should be a valid number.' => 'Cette valeur doit être un nombre.',
+            ),
+            ),
+        );
     }
 }
