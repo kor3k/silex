@@ -13,6 +13,7 @@ use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Monolog\Logger;
 use Symfony\Component\Security\Core\Encoder\PlaintextPasswordEncoder;
+use Dflydev\Silex\Provider\DoctrineOrm\DoctrineOrmServiceProvider;
 
 class Application extends SilexApplication
 {
