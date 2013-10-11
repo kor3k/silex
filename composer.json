@@ -27,8 +27,7 @@
         "swiftmailer/swiftmailer": "5.*",
 
         "dflydev/doctrine-orm-service-provider": "dev-master" ,
-        "symfony/yaml": "~2.3" ,
-        "friendsofsymfony/rest": "dev-master"
+        "symfony/yaml": "~2.3"
     },
             
             
