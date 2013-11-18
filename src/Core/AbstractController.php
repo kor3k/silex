@@ -25,12 +25,12 @@ abstract class AbstractController
     public function __invoke( ControllerCollection $controllers = null )
     {
 	return $this->connect( $controllers ?: $this->app['controllers_factory'] );
-    }    
+    }
 
-/**
- * 
- * @return \Silex\ControllerCollection
- */    
-     abstract protected function connect( ControllerCollection $controllers );
+    /**
+     * @param \Silex\ControllerCollection $controllers
+     * @return \Silex\ControllerCollection
+     */
+    abstract protected function connect( ControllerCollection $controllers );
 
 }
