@@ -35,19 +35,19 @@ class Application extends SilexApplication
  */    
     public function __construct(array $values = array())    
     {
-	parent::__construct( $values );
-	
-	if( !$this['debug'] )
-	{
-	    ErrorHandler::register();
-	    $this->error(
-	    function( \Exception $e , $code )
-	    {
-		return $this->handleError( $e , $code );
-	    });	    
-	}
-	
-	Request::enableHttpMethodParameterOverride();
+        parent::__construct( $values );
+
+        if( !$this['debug'] )
+        {
+            ErrorHandler::register();
+            $this->error(
+            function( \Exception $e , $code )
+            {
+                return $this->handleError( $e , $code );
+            });
+        }
+
+        Request::enableHttpMethodParameterOverride();
     }
 /**
  * @inheritdoc
@@ -195,19 +195,29 @@ class Application extends SilexApplication
             ),
         ));
     }
-    
-    protected function initDoctrineOrm( $connection )
+
+    /**
+     * @param string $connection
+     * @param array $mappings
+     */
+    protected function initDoctrineOrm( $connection , array $mappings = array() )
     {
+        if( empty( $mappings ) )
+        {
+            $mappings   =
+                array(
+                    array(
+                        "type" => "yml",
+                        "namespace" => 'App\Entity',
+                        "path" => DIR."/src/Resources/config/doctrine",
+                    ),
+                );
+        }
+
         $this->register(new DoctrineOrmServiceProvider, array(
             "orm.proxies_dir" => DIR ."/cache/proxies",
             "orm.em.options" => array(
-                "mappings" => array(
-                    array(
-                        "type" => "yml",
-                        "namespace" => "App\Entity",
-                        "path" => DIR."/src/Resources/config/doctrine",
-                    ),
-                ),
+                "mappings" => $mappings ,
                 "connection"    =>  $connection ,
             ),
         ));
@@ -236,8 +246,8 @@ class Application extends SilexApplication
     
 /**
  * 
- * @param string $user
- * @param string $password
+ * @param string $user Gmail user
+ * @param string $password Gmail password
  * @param string $sender
  */    
     protected function initSwiftmailer( $user , $password , $sender = null )
@@ -314,18 +324,21 @@ class Application extends SilexApplication
             return new PlaintextPasswordEncoder();
         });
     }
-      
-    protected function initTwig()
+
+    /**
+     * @param string $path path to templates dir, default src/Resources/views
+     */
+    protected function initTwig( $path = 'src/Resources/views' )
     {
         $this->register(new \Silex\Provider\TwigServiceProvider(), array(
-            'twig.path' => DIR.'/src/Resources/views',
+            'twig.path' => DIR.'/'.(string)$path,
         ));
     }
-    
+
     protected function initMonolog()
     {
         $this->register(new \Silex\Provider\MonologServiceProvider(), array(
-            'monolog.logfile'	=>  DIR.'/log/'. ( $this['debug'] ? 'dev' : 'prod' ) .'.log',
+            'monolog.logfile'	=>  DIR.'/logs/'. ( $this['debug'] ? 'dev' : 'prod' ) .'.log',
             'monolog.level'	=>  $this['debug'] ? Logger::DEBUG : Logger::INFO ,
             'monolog.name'	=>  'app' ,
         ));
