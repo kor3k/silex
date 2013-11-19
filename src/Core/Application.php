@@ -245,26 +245,49 @@ class Application extends SilexApplication
     }
     
 /**
- * 
- * @param string $user Gmail user
- * @param string $password Gmail password
+ *
+ * @param string $smtp smtp server
+ * @param string $user smtp user
+ * @param string $password smtp password
  * @param string $sender
- */    
-    protected function initSwiftmailer( $user , $password , $sender = null )
-    {			
+ */
+    protected function initSwiftmailer( $smtp , $user , $password , $sender = null )
+    {
         $this->register(new \Silex\Provider\SwiftmailerServiceProvider(), array(
                 'swiftmailer.options'     =>        array(
-                    'transport'         =>  'gmail',
-                    'host'              =>  'smtp.gmail.com',
+                    'transport'         =>  'smtp',
+                    'host'              =>  $smtp,
                     'username'          =>  $user,
                     'password'          =>  $password ,
                     'sender_address'    =>  $sender ?: $user,
-                    'encryption'        =>  'tls' ,
+                    'encryption'        =>  'ssl' ,
                     'auth_mode'         =>  'login' ,
-                    'port'              =>  587 ,
+                    'port'              =>  465 ,
                         )
         ));
-	
+
+    }
+
+    /**
+     *
+     * @param string $user Gmail user
+     * @param string $password Gmail password
+     */
+    protected function initSwiftGmailer( $user , $password )
+    {
+        $this->register(new \Silex\Provider\SwiftmailerServiceProvider(), array(
+            'swiftmailer.options'     =>        array(
+                'transport'         =>  'gmail',
+                'host'              =>  'smtp.gmail.com',
+                'username'          =>  $user,
+                'password'          =>  $password ,
+                'sender_address'    =>  $user,
+                'encryption'        =>  'tls' ,
+                'auth_mode'         =>  'login' ,
+                'port'              =>  587 ,
+            )
+        ));
+
     }
     
     protected function initUrlGenerator()
