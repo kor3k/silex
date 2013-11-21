@@ -49,6 +49,18 @@ class Application extends SilexApplication
 
         Request::enableHttpMethodParameterOverride();
     }
+
+    public function boot()
+    {
+        $this->after(
+        function( Request $request, Response $response )
+        {
+            $this->prepareResponse( $response );
+        });
+
+        parent::boot();
+    }
+
 /**
  * @inheritdoc
  */    
@@ -128,10 +140,11 @@ class Application extends SilexApplication
  */    
     protected function prepareResponse( Response $response )
     {
-        $response->setTtl( $this['response_ttl'] );
+        $response->setClientTtl( $this['response_ttl'] );
         $response->setProtocolVersion( '1.1' );
         $response->headers->set( 'Content-Language' , $this['locale'] );
         $response->setCharset( $this['charset'] );
+        $response->setVary( array( 'Accept' , 'Accept-Language', 'Cookie' , 'Authorization' , 'Host' , 'Accept-Encoding' ) );
 
         return $response;
     }
