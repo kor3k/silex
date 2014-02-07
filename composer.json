@@ -29,7 +29,7 @@
         "monolog/monolog": "~1.4,>=1.4.1" ,
 
         "dflydev/doctrine-orm-service-provider": "dev-master" ,
-        "symfony/doctrine-bridge": "~2.2",
+        "symfony/doctrine-bridge": "~2.4",
         "dominikzogg/doctrine-orm-manager-registry-provider" : "dev-master" ,
         "symfony/yaml": "~2.4"
     },
