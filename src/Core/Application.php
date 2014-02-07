@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Monolog\Logger;
 use Symfony\Component\Security\Core\Encoder\PlaintextPasswordEncoder;
 use Dflydev\Silex\Provider\DoctrineOrm\DoctrineOrmServiceProvider;
+use Dominikzogg\Silex\Provider\DoctrineOrmManagerRegistryProvider;
 
 class Application extends SilexApplication
 {
@@ -210,6 +211,8 @@ class Application extends SilexApplication
     }
 
     /**
+     * if you want to use Entity form type, you must call initForm prior to this
+     *
      * @param string $connection
      * @param array $mappings
      */
@@ -234,6 +237,8 @@ class Application extends SilexApplication
                 "connection"    =>  $connection ,
             ),
         ));
+
+        $this->register(new DoctrineOrmManagerRegistryProvider());
     }
     
 /**
