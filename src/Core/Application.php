@@ -349,21 +349,17 @@ class Application extends SilexApplication
     protected function initSecurity( array $security = array() )
     {		
 	    $this->register(new \Silex\Provider\SecurityServiceProvider(), $security + [ 'security.hide_user_not_found ' => $this['debug'] ? false : true ] );
-        $this->initSecurityEncoders();
-    }
 
-    private function initSecurityEncoders()
-    {
         $this['security.encoder.digest'] = $this->share(function ($app)
         {
             return new MessageDigestPasswordEncoder( 'ripemd160', false , 50 );
         });
 
         $this['security.encoder.plaintext'] = $this->share(
-        function( $app )
-        {
-            return new PlaintextPasswordEncoder();
-        });
+            function( $app )
+            {
+                return new PlaintextPasswordEncoder();
+            });
 
         $this['security.encoder_factory'] = $this->share(function ($app) {
             return new EncoderFactory(array(
@@ -475,5 +471,18 @@ class Application extends SilexApplication
 
             return $isGranted;
         }
+    }
+
+    /**
+     * Maps a PATCH request to a callable.
+     *
+     * @param string $pattern Matched route pattern
+     * @param mixed  $to      Callback that returns the response when matched
+     *
+     * @return Controller
+     */
+    public function patch($pattern, $to)
+    {
+        return $this['controllers']->match($pattern, $to)->method( 'PATCH' );
     }
 }
