@@ -3,7 +3,6 @@
 namespace Core;
 
 use Silex\Application as SilexApplication;
-use Silex\Route\SecurityTrait;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,17 +14,17 @@ use Monolog\Logger;
 use Symfony\Component\Security\Core\Encoder\PlaintextPasswordEncoder;
 use Dflydev\Silex\Provider\DoctrineOrm\DoctrineOrmServiceProvider;
 use Dominikzogg\Silex\Provider\DoctrineOrmManagerRegistryProvider;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class Application extends SilexApplication
 {
-    use SecurityTrait;
     use SilexApplication\TwigTrait;
     use SilexApplication\SecurityTrait;    
     use SilexApplication\FormTrait;
     use SilexApplication\UrlGeneratorTrait;
     use SilexApplication\SwiftmailerTrait
     {
-	mail as protected _mail;
+	    mail as protected _mail;
     }
     use SilexApplication\MonologTrait;
     use SilexApplication\TranslationTrait;
@@ -37,6 +36,8 @@ class Application extends SilexApplication
     public function __construct(array $values = array())    
     {
         parent::__construct( $values );
+
+        $this['route_class'] = 'Core\\Route';
 
         if( !$this['debug'] )
         {
@@ -70,20 +71,22 @@ class Application extends SilexApplication
         $response   =	parent::redirect( $url , $status );
         $this->terminate( $this['request'] , $response );
         return $response;
-    }    
-    
-/**
- * 
- * @param \Swift_Message $message
- */    
-    public function mail( \Swift_Message $message )
+    }
+
+    /**
+     *
+     * @param \Swift_Message $message
+     * @param null $failedRecipients
+     * @return bool
+     */
+    public function mail( \Swift_Message $message , &$failedRecipients = null )
     {    	
         if( $this['debug'] )
         {
             $message->setTo( $this['mailer_user'] );
         }
 
-        return $this->_mail( $message );
+        return $this->_mail( $message , $failedRecipients );
 	
 //	else
 //	{	    	    
@@ -152,7 +155,7 @@ class Application extends SilexApplication
     
     protected function initNativeSession()
     {
-        $this->register(new Silex\Provider\SessionServiceProvider(), array(
+        $this->register(new \Silex\Provider\SessionServiceProvider(), array(
            'session.storage.options'	    =>	array(
             'cookie_lifetime'   => 3600 ,
            ),
@@ -165,7 +168,7 @@ class Application extends SilexApplication
  */    
     protected function initDbSession( Connection $connection )
     {
-        $this->register(new Silex\Provider\SessionServiceProvider(), array(
+        $this->register(new \Silex\Provider\SessionServiceProvider(), array(
            'session.storage.options'	    =>	array(
             'cookie_lifetime'   => 3600 ,
            ),
@@ -327,7 +330,8 @@ class Application extends SilexApplication
     }
     
 /**
- * 
+ * if you are using a form to authenticate users, you need to enable session first
+ *
  * @param array $security security config
  */    
     protected function initSecurity( array $security = array() )
@@ -418,5 +422,31 @@ class Application extends SilexApplication
             ),
             ),
         );
+    }
+
+    /**
+     * @param string $role
+     * @param bool   $throwException
+     * @throws \Symfony\Component\Security\Core\Exception\AccessDeniedException
+     * @return bool
+     */
+    public function isGranted( $role , $throwException = false )
+    {
+        if( $this['security']->isGranted( 'ROLE_IDDQD' ) )
+        {
+            return true;
+        }
+        else
+        {
+            $isGranted  =   $this['security']->isGranted( $role );
+
+            if( $throwException && !$isGranted )
+            {
+//                $this->abort( 403 , "Access Denied" );
+                throw new AccessDeniedException();
+            }
+
+            return $isGranted;
+        }
     }
 }
