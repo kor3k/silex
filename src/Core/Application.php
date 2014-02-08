@@ -470,7 +470,6 @@ class Application extends SilexApplication
 
             if( $throwException && !$isGranted )
             {
-//                $this->abort( 403 , "Access Denied" );
                 throw new AccessDeniedException();
             }
 
