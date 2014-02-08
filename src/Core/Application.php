@@ -9,12 +9,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Debug\ErrorHandler;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
 use Doctrine\DBAL\Connection;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Monolog\Logger;
-use Symfony\Component\Security\Core\Encoder\PlaintextPasswordEncoder;
 use Dflydev\Silex\Provider\DoctrineOrm\DoctrineOrmServiceProvider;
 use Dominikzogg\Silex\Provider\DoctrineOrmManagerRegistryProvider;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Security\Core\Encoder\PlaintextPasswordEncoder ,
+    Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder ,
+    Symfony\Component\Security\Core\Encoder\EncoderFactory;
 
 class Application extends SilexApplication
 {
@@ -123,16 +125,26 @@ class Application extends SilexApplication
  */    
     protected function handleError( \Exception $e , $code )
     {
-        if( $e instanceof NotFoundHttpException )
+        if( $e instanceof HttpExceptionInterface )
         {
-            $response	=   $this->render( '404.html.twig' , [ 'error' => $e ] );
+            try
+            {
+                $response	=   $this->render( "/error/{$code}.html.twig" , [ 'error' => $e ] );
+            }
+            catch( \Twig_Error_Loader $twe )
+            {
+                $response	=   $this->render( '/error/error.html.twig' , [ 'error' => $e ] );
+            }
+
+            $response->headers->add( $e->getHeaders() );
         }
         else
         {
-            $response	=   $this->render( 'error.html.twig' , [ 'error' => $e ] );
+            $response	=   $this->render( '/error/error.html.twig' , [ 'error' => $e ] );
         }
 
         $this->prepareResponse( $response );
+
 
         return $response;
     }
@@ -336,7 +348,29 @@ class Application extends SilexApplication
  */    
     protected function initSecurity( array $security = array() )
     {		
-	    $this->register(new \Silex\Provider\SecurityServiceProvider(), $security );
+	    $this->register(new \Silex\Provider\SecurityServiceProvider(), $security + [ 'security.hide_user_not_found ' => $this['debug'] ? false : true ] );
+        $this->initSecurityEncoders();
+    }
+
+    private function initSecurityEncoders()
+    {
+        $this['security.encoder.digest'] = $this->share(function ($app)
+        {
+            return new MessageDigestPasswordEncoder( 'ripemd160', false , 50 );
+        });
+
+        $this['security.encoder.plaintext'] = $this->share(
+        function( $app )
+        {
+            return new PlaintextPasswordEncoder();
+        });
+
+        $this['security.encoder_factory'] = $this->share(function ($app) {
+            return new EncoderFactory(array(
+                'Symfony\Component\Security\Core\User\User' => $app['security.encoder.plaintext'],
+                'App\Entity\User' => $app['security.encoder.digest'],
+            ));
+        });
     }
     
 /**
@@ -362,12 +396,6 @@ class Application extends SilexApplication
         ];
 
         $this->initSecurity();
-
-        $this['security.encoder.digest'] = $this->share(
-        function( $app )
-        {
-            return new PlaintextPasswordEncoder();
-        });
     }
 
     /**
