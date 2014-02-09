@@ -327,17 +327,17 @@ class Application extends SilexApplication
     {
 	    $this->register(new \Silex\Provider\UrlGeneratorServiceProvider());
     }
-    
+
+    /**
+     * form needs translator for error messages etc, it will init the translator if it's not
+     */
     protected function initForm()
     {        
         $this->register(new \Silex\Provider\FormServiceProvider());
         
-        /* forms needs translator for error messages etc */
-        
         if( !isset( $this['translator'] ) )
         {
-            $this->register(new \Silex\Provider\TranslationServiceProvider(), array(
-            ));
+            $this->initTranslation();
         }
     }
     
@@ -418,12 +418,18 @@ class Application extends SilexApplication
 	    $this->register(new \Silex\Provider\ValidatorServiceProvider());
     }
     
-    protected function initTranslation( $locale , $localeFallback = null )
+    protected function initTranslation( $locale = null , array $localeFallbacks = array() )
     {
-        $this->register(new \Silex\Provider\TranslationServiceProvider(), array(
-            'locale'		=>  $locale ,
-            'locale_fallback'	=>  $localeFallback ?: $locale ,
-        ));
+        $config =   array(
+            'locale_fallbacks'	=>  $localeFallbacks + [ 'en' ] ,
+        );
+
+        if( $locale )
+        {
+            $config['locale']   =   $locale;
+        }
+
+        $this->register(new \Silex\Provider\TranslationServiceProvider(), $config );
 
         $this['translator.domains'] = array(
             'messages' => array(
@@ -438,6 +444,10 @@ class Application extends SilexApplication
             'fr' => array(
                 'hello'     => 'Bonjour %name%',
                 'goodbye'   => 'Au revoir %name%',
+            ),
+            'cs' => array(
+                'Bad credentials'     => 'Chybné uživatelské údaje',
+                'Your session has timed out, or you have disabled cookies.' =>  'Vaše session vypršela nebo máte vypnuté cookies'
             ),
             ),
             'validators' => array(
