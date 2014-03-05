@@ -458,6 +458,11 @@ class Application extends SilexApplication
         );
     }
 
+    public function initWhoops()
+    {
+        $this->register(new \Whoops\Provider\Silex\WhoopsServiceProvider());
+    }
+
     /**
      * @param string $role
      * @param bool   $throwException
