@@ -266,7 +266,7 @@ class Application extends SilexApplication
            'http_cache.cache_dir'   =>	DIR.'/cache/',
            'http_cache.esi'	    =>	null,
            'http_cache.options'	    =>	array(
-            'debug'                  => false,
+            'debug'                  => $this['debug'],
             'default_ttl'            => (int)$ttl,
             'private_headers'        => array('Authorization', 'Cookie'),
             'allow_reload'           => true,
