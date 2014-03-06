@@ -458,7 +458,7 @@ class Application extends SilexApplication
         );
     }
 
-    public function initWhoops()
+    protected function initWhoops()
     {
         $this->register(new \Whoops\Provider\Silex\WhoopsServiceProvider());
     }
