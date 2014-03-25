@@ -12,7 +12,7 @@ use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Monolog\Logger;
 use Dflydev\Silex\Provider\DoctrineOrm\DoctrineOrmServiceProvider;
-use Dominikzogg\Silex\Provider\DoctrineOrmManagerRegistryProvider;
+use Saxulum\DoctrineOrmManagerRegistry\Silex\Provider\DoctrineOrmManagerRegistryProvider;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\Encoder\PlaintextPasswordEncoder ,
     Symfony\Component\Security\Core\Encoder\MessageDigestPasswordEncoder ,
