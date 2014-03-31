@@ -487,17 +487,4 @@ class Application extends SilexApplication
             return $isGranted;
         }
     }
-
-    /**
-     * Maps a PATCH request to a callable.
-     *
-     * @param string $pattern Matched route pattern
-     * @param mixed  $to      Callback that returns the response when matched
-     *
-     * @return Controller
-     */
-    public function patch($pattern, $to)
-    {
-        return $this['controllers']->match($pattern, $to)->method( 'PATCH' );
-    }
 }
