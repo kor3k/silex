@@ -63,6 +63,14 @@ class Application extends SilexApplication
         });
 
         parent::boot();
+
+        // register twig "asset" function
+        $this['twig']->addFunction( new \Twig_SimpleFunction( 'asset' ,
+            function( $path )
+            {
+                $path   =   ( 0 === strpos( $path , '/' ) ) ? $path : '/'. $path;
+                return ( defined( 'WEB' ) ? WEB : '.' ) . $path;
+            }) );
     }
 
 /**
