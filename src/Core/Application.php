@@ -133,26 +133,33 @@ class Application extends SilexApplication
  */    
     protected function handleError( \Exception $e , $code )
     {
-        if( $e instanceof HttpExceptionInterface )
+        try
         {
-            try
+            if( $e instanceof HttpExceptionInterface )
             {
-                $response	=   $this->render( "/error/{$code}.html.twig" , [ 'error' => $e ] );
+                try
+                {
+                    $response	=   $this->render( "/error/{$code}.html.twig" , [ 'error' => $e ] );
+                }
+                catch( \Twig_Error_Loader $twe )
+                {
+                    $response	=   $this->render( '/error/error.html.twig' , [ 'error' => $e ] );
+                }
+
+                $response->headers->add( $e->getHeaders() );
             }
-            catch( \Twig_Error_Loader $twe )
+            else
             {
                 $response	=   $this->render( '/error/error.html.twig' , [ 'error' => $e ] );
             }
-
-            $response->headers->add( $e->getHeaders() );
         }
-        else
+        catch( \Twig_Error_Loader $twe )
         {
-            $response	=   $this->render( '/error/error.html.twig' , [ 'error' => $e ] );
+            $html       =   '<!doctype html><html><head></head><body>error: %s (%s)</body></html>';
+            $response   =   new Response( sprintf( $html , $e->getMessage() , $e->getCode() ) );
         }
 
         $this->prepareResponse( $response );
-
 
         return $response;
     }
